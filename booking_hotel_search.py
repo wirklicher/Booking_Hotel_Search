@@ -8,14 +8,30 @@ import json
 import re
 
 
+class Hotel:
+    def __init__(self, name, rating, rating_count, price):
+        self.name = name
+        self.rating = rating
+        self.rating_count = rating_count
+        self.price = price
+    
+    def gimmeInfo(self):
+        print(f"Hotel se jmenuje: {self.name}")
+        print(f"Jeho hodnocení je {rating} a celkem za dobu své existence obdržel na booking.com {rating_count} recenzí!")
+        print(f"Cena za určenou dobu je {price}")
+
+
+
 webdriver_service = Service("./chromedriver")
-driver = webdriver.Chrome(service=webdriver_service)
+driver = webdriver.Chrome(service=webdriver_service,)
+driver.minimize_window()
 
 
 
-dest = "Rovaniemi"
-checkin = '2023-07-08'
-checkout = '2023-07-15'
+
+dest = "Brighton"
+checkin = '2023-07-16'
+checkout = '2023-07-18'
 group_adults = '1'
 group_children = '0'
 numberRooms = '1'
@@ -40,9 +56,15 @@ doc = BeautifulSoup(driver.page_source, "lxml")
 
 for u in doc.select('div[data-testid="property-card"]'):
     title = u.select_one('div[class="fcab3ed991 a23c043802"]').get_text(strip=True)
-    rating = u.select_one('div[class="d8eab2cf7f c90c0a70d3 db63693c62"]').get_text(strip=True)
+    rating_count = u.select_one('div[class="d8eab2cf7f c90c0a70d3 db63693c62"]').get_text(strip=True)
     price = u.select_one('span[class="fcab3ed991 fbd1d3018c e729ed5ab6"]').get_text(strip=True)
-    print(title + ' ' + rating + ' ' + price)
+    for d in doc.select('div[data-testid="review-score"]'):
+        rating = u.select_one('div[class="b5cd09854e d10a6220b4"]').get_text(strip=True)
+    a = Hotel(title, rating, rating_count, price)
+    a.gimmeInfo()
 
-
+num = doc.select_one('div[class="d8f77e681c"]').getText(strip=True)
+a = [int(s) for s in num.split() if s.isdigit()]
+a = (a[0] / 25)
+print(a)
 
